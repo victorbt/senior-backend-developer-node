@@ -1,0 +1,20 @@
+{
+  "name": "senior-backend-developer-node",
+  "version": "1.0.0",
+  "description": "Senior Developer Node.js App Sample",
+  "main": "index.js",
+  "scripts": {
+    "test": "APP_ENV=local mocha tests/**/*Test.js --exit --timeout=8000",
+    "dev": "APP_ENV=local nodemon index.js",
+    "start": "APP_ENV=local nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victorbt/senior-backend-developer-node.git"
+  },
+  "author": "victor.barreratoledo@gmail.com",
+  "bugs": {
+    "url": "https://github.com/victorbt/senior-backend-developer-node/issues"
+  },
+  "homepage": "https://github.com/victorbt/senior-backend-developer-node#readme"
+}
