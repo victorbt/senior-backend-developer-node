@@ -1,4 +1,4 @@
-import { Db, ObjectId, Collection } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 
 export interface IProduct {
     _id?: ObjectId;
@@ -12,7 +12,7 @@ export class Product implements IProduct {
     constructor(public id: number, public name: string, public price: number, public categories: string[], public _id?: ObjectId) { }
 }
 
-export const buildProductJsonSchemaModel = async (db: Db, name: string) => {
+export const buildProductJsonSchemaModel = async (db: Db) => {
     await db.command({
         "collMod": "products",
         "validator": {

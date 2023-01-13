@@ -1,3 +1,8 @@
+import {
+	IQuery,
+	IProduct
+} from 'domain/entities/models';
+
 import { IProductsRepo } from '../../infrastructure/repositories/products/products.repository';
 
 import { buildListProducts, IListProducts } from './list.products.service';
@@ -16,21 +21,18 @@ export interface IProductsService {
 	searchProducts: ISearchProducts;
 }
 
-export const buildProductsService = (productsRepo: IProductsRepo): IProductsService => {
-	const productDetail = buildproductDetail({ productsRepo })
-	const listProducts = buildListProducts({ productsRepo })
-	const insertProducts = buildInsertProducts({ productsRepo })
-	const updateProduct = buildUpdateProduct({ productsRepo })
-	const deleteProduct = buildDeleteProduct({ productsRepo })
-	const searchProducts = buildSearchProducts({ productsRepo })
+export class ProductsService implements IProductsService {
+	_productsRepo: IProductsRepo
 
-	return {
-		productDetail,
-		listProducts,
-		insertProducts,
-		updateProduct,
-		deleteProduct,
-		searchProducts,
-	};
-};
+	constructor(_productsRepo: IProductsRepo) {
+		this._productsRepo = _productsRepo
+	}
+
+	public productDetail = (query: IQuery) => buildproductDetail({ productsRepo: this._productsRepo })(query)
+	public listProducts = (query: IQuery) => buildListProducts({ productsRepo: this._productsRepo })(query)
+	public insertProducts = (products: IProduct[]) => buildInsertProducts({ productsRepo: this._productsRepo })(products)
+	public updateProduct = (query: IQuery, product: IProduct) => buildUpdateProduct({ productsRepo: this._productsRepo })(query, product)
+	public deleteProduct = (query: IQuery) => buildDeleteProduct({ productsRepo: this._productsRepo })(query)
+	public searchProducts = (text: string) => buildSearchProducts({ productsRepo: this._productsRepo })(text)
+}
 

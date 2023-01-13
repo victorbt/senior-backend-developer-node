@@ -1,34 +1,22 @@
-import { StatusCodes } from 'http-status-codes';
-import { IHttpRequest } from '../../helpers/callback';
+import { Request } from 'express'
+
+import { Product, Query } from '../../../domain/entities/models'
 
 import { IProductsService } from '../../services/products';
 
-import { IControllerResponse } from '..';
-
 export const buildProductDetail = (service: IProductsService) => {
     return async (
-        request: Partial<IHttpRequest>,
-    ): Promise<IControllerResponse> => {
+        request: Partial<Request>,
+    ): Promise<Product> => {
         try {
-            const product = await service.productDetail(request.body);
+            let productId: string = request.params ? request.params?.['id'] : "0";
+            let productID = parseInt(productId);
 
-            return {
-                success: true,
-                message: "Sucess",
-                statusCode: StatusCodes.OK,
-                body: {
-                    product: product
-                }
-            };
+            let query = new Query([{ field: "id", operator: "$eq", value: productID }], {}, {});
 
+            return await service.productDetail(query);
         } catch (e) {
-            return {
-                success: false,
-                message: "Error",
-                statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
-                body: {}
-            };
+            throw e;
         }
-
     };
 };

@@ -1,3 +1,4 @@
+import { DatabaseConfig } from "@application/config";
 import { expect } from "chai";
 import { MongoClient } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server"
@@ -24,18 +25,22 @@ describe('Products Repository', () => {
 			});
 
 			const uri = mongod.getUri();
-			connection = await connectToDatabase(uri)
+
+			let dbConfig: DatabaseConfig = {
+				MONGO_URI: uri
+			}
+
+			connection = await connectToDatabase(dbConfig)
 
 			return await connection.db("mongo").collection("products").insertMany(fakeProducts())
 		} catch (e: any) {
 			console.log(e);
+			throw e;
 		}
-
-		return
 	});
 
 
-	describe('list producst', () => {
+	describe('list products', () => {
 		let productRepo: IProductsRepo;
 		productRepo = buildProductsRepo()
 
@@ -46,16 +51,6 @@ describe('Products Repository', () => {
 			expect(result).to.length(2)
 			return
 		});
-
-		// it('throws error when invalid data is given', async () => {
-		// 	try {
-		// 		const invalidName = '';
-
-		// 		await addBooks({ name: invalidName });
-		// 	} catch (error) {
-		// 		expect(error).toBeInstanceOf(ClientError);
-		// 	}
-		// });
 	});
 
 	after(async () => {

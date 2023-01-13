@@ -6,33 +6,38 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"IControllerResponse": {
+			"ObjectId": {
+				"type": "string",
+				"description": "A class representation of the BSON ObjectId type."
+			},
+			"Product": {
 				"properties": {
-					"success": {
-						"type": "boolean"
+					"_id": {
+						"$ref": "#/components/schemas/ObjectId"
 					},
-					"message": {
-						"type": "string"
-					},
-					"statusCode": {
+					"id": {
 						"type": "number",
 						"format": "double"
 					},
-					"body": {
-						"properties": {
-							"error": {
-								"type": "string"
-							}
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"categories": {
+						"items": {
+							"type": "string"
 						},
-						"additionalProperties": {},
-						"type": "object"
+						"type": "array"
 					}
 				},
 				"required": [
-					"success",
-					"message",
-					"statusCode",
-					"body"
+					"id",
+					"name",
+					"price",
+					"categories"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -50,32 +55,7 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/v1/products": {
-			"post": {
-				"operationId": "GetUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IControllerResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {}
-						}
-					}
-				}
-			},
+		"/api/v1/products": {
 			"get": {
 				"operationId": "ListProducts",
 				"responses": {
@@ -84,8 +64,139 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IControllerResponse"
+									"properties": {
+										"products": {
+											"items": {
+												"$ref": "#/components/schemas/Product"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"products"
+									],
+									"type": "object"
 								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Get"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "InsertProducts",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Post",
+					"Insert",
+					"Create"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/Product"
+								},
+								"type": "array"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/products/{productID}": {
+			"get": {
+				"operationId": "ProductDetail",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Get"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "UpdateProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			},
+			"delete": {
+				"operationId": "DeleteProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/v1/products/search": {
+			"post": {
+				"operationId": "SearchProducts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/v1/products/find": {
+			"post": {
+				"operationId": "FindProducts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
 							}
 						}
 					}

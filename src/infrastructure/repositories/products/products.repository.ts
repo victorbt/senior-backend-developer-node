@@ -1,23 +1,27 @@
-import { ObjectId } from "mongodb";
-
 import { Product, IProduct } from '../../../../domain/entities/product.model';
 
 import { collections } from '../../../database/mongo.service';
 
-import { IQuery } from '../../../../domain/entities/query.model';
+import { Query } from '../../../../domain/entities/query.model';
 
 export interface IProductsRepo {
-	find: (query: IQuery) => Promise<Product[]>;
-	findOne: (query: IQuery) => Promise<Product>;
-	insertOne: (data: IProduct) => Promise<number>;
-	insertMany: (data: IProduct[]) => Promise<number[]>;
-	updateOne: (query: IQuery, data: Product) => Promise<Product>;
-	deleteOne: (query: IQuery) => Promise<number>;
+	find: (query: Query) => Promise<Product[]>;
+	findOne: (query: Query) => Promise<Product>;
+	insertOne: (data: Product) => Promise<number>;
+	insertMany: (data: Product[]) => Promise<number[]>;
+	updateOne: (query: Query, data: Product) => Promise<Product>;
+	deleteOne: (query: Query) => Promise<number>;
 	search: (text: string) => Promise<Product[]>;
 }
 
+export var productsRepo: IProductsRepo
+
 export const buildProductsRepo = (): IProductsRepo => {
-	const find = async (query: IQuery) => {
+	if (productsRepo) {
+		return productsRepo
+	}
+	
+	const find = async (query: Query) => {
 		try {
 			let filters = query.generateFilterElements()
 			return await collections.products?.find<IProduct>(filters).toArray() as Product[];
@@ -26,7 +30,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 		}
 	};
 
-	const findOne = async (query: IQuery) => {
+	const findOne = async (query: Query) => {
 		try {
 			let filters = query.generateFilterElements()
 			return await collections.products?.findOne<IProduct>(filters) as Product;
@@ -37,15 +41,15 @@ export const buildProductsRepo = (): IProductsRepo => {
 
 	const insertOne = async (data: IProduct) => {
 		try {
+			// getNextID
+			let id = 0
+
 			let filters = { "name": data.name }
 			let foundProduct = await collections.products?.findOne<IProduct>(filters)
 			if (foundProduct) throw new Error("Product already exists")
+			await collections.products?.insertOne(data)
 
-			let update = await collections.products?.insertOne(data)
-
-			let updateID = update?.insertedId as ObjectId
-
-			return 0
+			return id
 		} catch (error) {
 			throw (error)
 		}
@@ -66,7 +70,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 		}
 	};
 
-	const updateOne = async (query: IQuery, data: IProduct) => {
+	const updateOne = async (query: Query, data: IProduct) => {
 		try {
 			let filters = query.generateFilterElements()
 			let update = (await collections.products?.findOneAndUpdate(filters, data))
@@ -82,7 +86,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 		}
 	};
 
-	const deleteOne = async (query: IQuery) => {
+	const deleteOne = async (query: Query) => {
 		try {
 			let filters = query.generateFilterElements()
 			let update = (await collections.products?.findOneAndDelete(filters))
@@ -106,7 +110,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 			.toArray()) as Product[];
 	};
 
-	return {
+	productsRepo = {
 		find,
 		findOne,
 		insertOne,
@@ -115,5 +119,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 		deleteOne,
 		search
 	};
+
+	return productsRepo
 };
 

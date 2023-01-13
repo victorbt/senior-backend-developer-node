@@ -1,3 +1,3 @@
-export class DatabaseConfig {
-    public static readonly URI: string = "";
+export interface DatabaseConfig {
+    MONGO_URI: string
 }

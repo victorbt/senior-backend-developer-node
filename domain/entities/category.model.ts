@@ -11,7 +11,7 @@ export class Category implements ICategory {
     constructor(public id: number, public name: string, public categories: string[], public _id?: ObjectId) { }
 }
 
-export const buildCategoryJsonSchemaModel = async (db: Db, name: string) => {
+export const buildCategoryJsonSchemaModel = async (db: Db) => {
     await db.command({
         "collMod": "categories",
         "validator": {}

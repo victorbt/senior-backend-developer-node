@@ -2,9 +2,9 @@ import { ICategory } from 'domain/entities/category.model';
 
 import { ICategoriesRepo } from '../../infrastructure/repositories/categories/categories.repository';
 
-import { IQuery } from '../../../domain/entities/query.model';
+import { Query } from '../../../domain/entities/query.model';
 
-export type IListCategories = (query: IQuery) => Promise<ICategory[]>;
+export type IListCategories = (query: Query) => Promise<ICategory[]>;
 
 export const buildListCategories = ({
 	categoriesRepo

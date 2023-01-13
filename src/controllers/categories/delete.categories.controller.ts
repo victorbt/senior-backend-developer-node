@@ -1,12 +1,12 @@
 import { Request } from 'express'
-import { IProductsService } from '../../services/products';
+import { ICategoriesService } from '../../services/categories';
 
-export const buildDeleteProduct = (service: IProductsService) => {
+export const buildDeleteCategory = (service: ICategoriesService) => {
     return async (
         request: Partial<Request>,
     ): Promise<void> => {
         try {
-            let ok = await service.deleteProduct(request.body);
+            let ok = await service.deleteCategory(request.body);
             if (ok) {
                 return
             }

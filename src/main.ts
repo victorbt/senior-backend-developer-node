@@ -1,4 +1,5 @@
 import 'module-alias/register';
+
 import { ServerApp } from './application/app';
 
 (async (): Promise<void> => {

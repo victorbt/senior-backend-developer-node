@@ -12,8 +12,8 @@ export interface IFilter {
 }
 
 export interface IPagination {
-    offset: number
-    limit: number
+    offset?: number
+    limit?: number
 }
 
 export class Query implements IQuery {
@@ -36,7 +36,7 @@ export class Query implements IQuery {
                     mongoFilters[filter.field] = filter.value
                     break;
                 case 'object':
-                    const isArray = (x: any): x is ArrType => true
+                    const isArray = (x: any): x is ArrType => { return true}
                     if (isArray(filter.value)) {
                         let mongoFilter: Record<string, any> = {}
                         mongoFilter[filter.operator] = filter.value

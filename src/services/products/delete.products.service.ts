@@ -9,7 +9,6 @@ export const buildDeleteProduct = ({
     productsRepo: IProductsRepo;
 }): IDeleteProducts => {
     return async query => {
-        //const bookData = validateBook(body);
         return productsRepo.deleteOne(query)
     };
 };

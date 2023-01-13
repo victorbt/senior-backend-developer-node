@@ -1,11 +1,12 @@
+import { buildProductsRepo } from '../../src/infrastructure/repositories/products/products.repository'
+
 import chai, { expect } from 'chai'
 import chaiHttp from 'chai-http'
 import { SinonSandbox, createSandbox } from 'sinon'
 
 import { ServerApp } from '../../src/application/app';
-// const faker = require('faker');
 
-import { productsControllers } from '../../src/routes';
+// const faker = require('faker');
 
 import { fakeProducts } from '../fixtures/products.fixture'
 
@@ -25,23 +26,17 @@ describe('Products controller', () => {
     });
 
     it('Should return 200 when repository return products', async () => {
-        let productsRepo = productsControllers.getRepo()
+       let productsRepo = buildProductsRepo()
         sandbox.stub(productsRepo, 'find')
-            .callsFake(() => Promise.resolve(fakeProducts()));
-
-
-        let productsService = productsControllers.getService()
-        sandbox.stub(productsService, 'listProducts')
             .callsFake(() => Promise.resolve(fakeProducts()));
 
         const res = await chai.request(serverApplication.getApp())
             .get(`/api/v1/products`)
-        //   .set('x-application-id', 'test')
         //   .set('auth_user', userId);
 
         expect(res).have.status(200)
         expect(res.body).be.a('object');
-        expect(res.body).have.property('body')
+        expect(res.body).have.property('products')
     });
 
     // it('Should return 400 when core return 400 ', async function testCase() {

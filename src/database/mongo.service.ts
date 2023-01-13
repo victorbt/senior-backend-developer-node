@@ -1,26 +1,27 @@
 import { Db, MongoClient, Collection } from "mongodb";
 
+import {
+    DatabaseConfig
+  } from '../application/config/database.config';
+
 import { IProduct } from "domain/entities/product.model";
 import { ICategory } from "domain/entities/category.model";
-
-// import * as dotenv from "dotenv";
 
 export const collections: {
     products?: Collection<IProduct>
     categories?: Collection<ICategory>
-    // comonents?: Collection<IComponent>
+    // components?: Collection<IComponent>
     // contexts?: Collection<IContext>
 } = {}
 
-export async function connectToDatabase(uri: string): Promise<MongoClient> {
-    const client: MongoClient = new MongoClient(uri);//process.env.DB_CONN_STRING);
-    // dotenv.config();
+export async function connectToDatabase(dbConfig:DatabaseConfig): Promise<MongoClient> {
+    const client: MongoClient = new MongoClient(dbConfig.MONGO_URI);
     try {
         await client.connect();
 
-        const db: Db = client.db("mongo")//process.env.DB_NAME);
+        const db: Db = client.db("mongo");
 
-        console.log(`Successfully connected to database: ${db.databaseName}`);
+        console.log(`🟢 Mongo db connected: ${db.databaseName}`);
 
         const productsCollection: Collection<IProduct> = db.collection<IProduct>("products");//(process.env.PRODUCTS_COLLECTION_NAME);
         collections.products = productsCollection;
@@ -34,7 +35,7 @@ export async function connectToDatabase(uri: string): Promise<MongoClient> {
 
     } catch (e) {
         client.close();
-        console.log(`Successfully connected`)
+        console.log(e)
         throw e
     }
 
