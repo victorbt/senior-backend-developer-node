@@ -47,9 +47,6 @@ export class ProductsControllers extends Controller {
     @Body() body: Product[],
     @Request() req: any
   ): Promise<any> {
-    if (body.length == 0) {
-      throw new Error("empty ProductsList");
-    }
     return buildInsertProducts(this._productsService)(req)
   }
 

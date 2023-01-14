@@ -7,6 +7,8 @@ import { Query } from '../../../domain/entities/query.model';
 
 import { Product } from '../../../domain/entities/models';
 
+type ProductData = Pick<Product, 'id' | 'name' | 'description' | 'vendor' | 'image' | 'price' | 'categories'>;
+
 export const buildListProducts = (service: IProductsService) => {
 	return async (
 		request: Partial<Request>,
@@ -18,6 +20,6 @@ export const buildListProducts = (service: IProductsService) => {
 
 		let query = new Query(filters, { offset: 0, limit: 0 }, {});
 
-		return { products: await service.listProducts(query) }
+		return { products: await service.listProducts(query) as ProductData[] }
 	};
 };

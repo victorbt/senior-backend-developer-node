@@ -1,8 +1,7 @@
-import { Product } from '../../../domain/entities/product.model';
-import { IQuery } from '../../../domain/entities/query.model';
+import { Product, Query } from '../../../domain/entities/models';
 import { IProductsRepo } from '../../infrastructure/repositories/products/products.repository';
 
-export type IUpdateProduct = (query: IQuery, product: Product) => Promise<Product>;
+export type IUpdateProduct = (query: Query, product: Product) => Promise<Product>;
 
 export const buildUpdateProduct = ({
     productsRepo,

@@ -2,13 +2,20 @@ import { Db, ObjectId } from "mongodb";
 
 export interface ICategory {
     _id?: ObjectId;
-    id: number;
+    id?: number;
     name: string;
+    description: string;
     categories: string[];
 }
 
 export class Category implements ICategory {
-    constructor(public id: number, public name: string, public categories: string[], public _id?: ObjectId) { }
+    constructor(
+        public name: string,
+        public description: string,
+        public categories: string[],
+        public _id?: ObjectId,
+        public id?: number
+    ) { }
 }
 
 export const buildCategoryJsonSchemaModel = async (db: Db) => {

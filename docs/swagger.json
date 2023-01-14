@@ -22,6 +22,15 @@
 					"name": {
 						"type": "string"
 					},
+					"description": {
+						"type": "string"
+					},
+					"vendor": {
+						"type": "string"
+					},
+					"image": {
+						"type": "string"
+					},
 					"price": {
 						"type": "number",
 						"format": "double"
@@ -34,8 +43,10 @@
 					}
 				},
 				"required": [
-					"id",
 					"name",
+					"description",
+					"vendor",
+					"image",
 					"price",
 					"categories"
 				],

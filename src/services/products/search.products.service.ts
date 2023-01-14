@@ -1,8 +1,7 @@
-import { IProduct } from '../../../domain/entities/product.model';
-
+import { Product } from '../../../domain/entities/product.model';
 import { IProductsRepo } from '../../infrastructure/repositories/products/products.repository';
 
-export type ISearchProducts = (text: string) => Promise<IProduct[]>;
+export type ISearchProducts = (text: string) => Promise<Product[]>;
 
 export const buildSearchProducts = ({
 	productsRepo

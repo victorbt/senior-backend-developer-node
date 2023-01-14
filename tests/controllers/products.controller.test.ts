@@ -28,7 +28,7 @@ describe('Products controller', () => {
     it('Should return 200 when repository return products', async () => {
        let productsRepo = buildProductsRepo()
         sandbox.stub(productsRepo, 'find')
-            .callsFake(() => Promise.resolve(fakeProducts()));
+            .callsFake(() => Promise.resolve(fakeProducts(2)));
 
         const res = await chai.request(serverApplication.getApp())
             .get(`/api/v1/products`)

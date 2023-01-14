@@ -1,15 +1,15 @@
 import {
 	IQuery,
-	IProduct
+	Product
 } from 'domain/entities/models';
 
 import { IProductsRepo } from '../../infrastructure/repositories/products/products.repository';
 
 import { buildListProducts, IListProducts } from './list.products.service';
 import { buildInsertProducts, IInsertProducts } from './insert.products.service';
-import { buildproductDetail, IProductDetail } from './detail.products.service';
+import { buildProductDetail, IProductDetail } from './detail.products.service';
 import { buildUpdateProduct, IUpdateProduct } from './update.products.service';
-import { buildDeleteProduct, IDeleteProducts } from './delete.products.service';
+import { buildDeleteProduct, IDeleteProduct } from './delete.products.service';
 import { buildSearchProducts, ISearchProducts } from './search.products.service';
 
 export interface IProductsService {
@@ -17,7 +17,7 @@ export interface IProductsService {
 	listProducts: IListProducts;
 	insertProducts: IInsertProducts;
 	updateProduct: IUpdateProduct;
-	deleteProduct: IDeleteProducts;
+	deleteProduct: IDeleteProduct;
 	searchProducts: ISearchProducts;
 }
 
@@ -28,10 +28,10 @@ export class ProductsService implements IProductsService {
 		this._productsRepo = _productsRepo
 	}
 
-	public productDetail = (query: IQuery) => buildproductDetail({ productsRepo: this._productsRepo })(query)
+	public productDetail = (query: IQuery) => buildProductDetail({ productsRepo: this._productsRepo })(query)
 	public listProducts = (query: IQuery) => buildListProducts({ productsRepo: this._productsRepo })(query)
-	public insertProducts = (products: IProduct[]) => buildInsertProducts({ productsRepo: this._productsRepo })(products)
-	public updateProduct = (query: IQuery, product: IProduct) => buildUpdateProduct({ productsRepo: this._productsRepo })(query, product)
+	public insertProducts = (products: Product[]) => buildInsertProducts({ productsRepo: this._productsRepo })(products)
+	public updateProduct = (query: IQuery, product: Product) => buildUpdateProduct({ productsRepo: this._productsRepo })(query, product)
 	public deleteProduct = (query: IQuery) => buildDeleteProduct({ productsRepo: this._productsRepo })(query)
 	public searchProducts = (text: string) => buildSearchProducts({ productsRepo: this._productsRepo })(text)
 }

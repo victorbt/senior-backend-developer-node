@@ -19,8 +19,11 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "_id": {"ref":"ObjectId"},
-            "id": {"dataType":"double","required":true},
+            "id": {"dataType":"double"},
             "name": {"dataType":"string","required":true},
+            "description": {"dataType":"string","required":true},
+            "vendor": {"dataType":"string","required":true},
+            "image": {"dataType":"string","required":true},
             "price": {"dataType":"double","required":true},
             "categories": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },

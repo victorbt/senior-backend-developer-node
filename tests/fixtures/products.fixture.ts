@@ -3,24 +3,25 @@ import { ObjectId } from "mongodb";
 import { Product, IProduct } from '../../domain/entities/product.model'
 
 
-export const fakeProducts = (): IProduct[] => {
-    var product: Product = {
-        _id: ObjectId.createFromHexString(faker.database.mongodbObjectId()),
-        id: 1,
-        name: faker.commerce.product(),
-        price: faker.datatype.number(),
-        categories: [faker.datatype.string()]
-    }
+export const fakeProducts = (l: number): Product[] => {
+    let products: Product[] = []
 
-    var product2: Product = {
-        _id: ObjectId.createFromHexString(faker.database.mongodbObjectId()),
-        id: 2,
-        name: faker.commerce.product(),
-        price: faker.datatype.number(),
-        categories: [faker.datatype.string()]
-    }
+    let i = 0
+    while (i < l) {
+        var product: Product = {
+            _id: ObjectId.createFromHexString(faker.database.mongodbObjectId()),
+            id: i,
+            name: faker.commerce.product(),
+            image: faker.internet.url(),
+            vendor: faker.company.name(),
+            description: faker.commerce.productDescription(),
+            price: faker.datatype.number(0),
+            categories: [faker.datatype.string()]
+        }
 
-    var products: IProduct[] = [product, product2]
+        products.push(product)
+        i++;
+    }
 
     return products
 }

@@ -20,7 +20,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 	if (productsRepo) {
 		return productsRepo
 	}
-	
+
 	const find = async (query: Query) => {
 		try {
 			let filters = query.generateFilterElements()
@@ -42,7 +42,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 	const insertOne = async (data: IProduct) => {
 		try {
 			// getNextID
-			let id = 0
+			let id = 1
 
 			let filters = { "name": data.name }
 			let foundProduct = await collections.products?.findOne<IProduct>(filters)
@@ -57,23 +57,39 @@ export const buildProductsRepo = (): IProductsRepo => {
 
 	const insertMany = async (data: IProduct[]) => {
 		try {
-			let update = await collections.products?.insertMany(data)
+			let inserted = await collections.products?.insertMany(data)
 
-			let updatedIDs = update?.insertedCount as number;
-			if (updatedIDs) {
-				return []
+			let insertedCound = inserted?.insertedCount as number;
+			let insertedIDs = inserted?.insertedIds as {
+				[key: number]: any;
 			}
 
-			throw new Error("insert error");
+			let updatedIds: any[] = []
+
+			for (let id in insertedIDs) {
+				//console.log(insertedIDs[id])
+				updatedIds.push(0)
+			}
+
+			if (updatedIds.length == 0) {
+				throw new Error("insert error");
+			}
+
+			if (data.length > insertedCound) {
+				return updatedIds
+			}
+
+			return updatedIds
 		} catch (error) {
 			throw (error)
 		}
 	};
 
-	const updateOne = async (query: Query, data: IProduct) => {
+	const updateOne = async (query: Query, data: Product) => {
 		try {
 			let filters = query.generateFilterElements()
-			let update = (await collections.products?.findOneAndUpdate(filters, data))
+
+			let update = await collections.products?.findOneAndUpdate(filters, { "$set": { data } })
 			let updateStatus = update?.ok as number;
 			if (updateStatus) {
 				return data

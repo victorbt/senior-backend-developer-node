@@ -2,10 +2,10 @@ import { Db, MongoClient, Collection } from "mongodb";
 
 import {
     DatabaseConfig
-  } from '../application/config/database.config';
+} from '../application/config/database.config';
 
-import { IProduct } from "domain/entities/product.model";
-import { ICategory } from "domain/entities/category.model";
+import { IProduct, buildProductDatabaseJsonSchemaModel } from "../../domain/entities/product.model";
+import { ICategory } from "../../domain/entities/category.model";
 
 export const collections: {
     products?: Collection<IProduct>
@@ -14,7 +14,7 @@ export const collections: {
     // contexts?: Collection<IContext>
 } = {}
 
-export async function connectToDatabase(dbConfig:DatabaseConfig): Promise<MongoClient> {
+export async function connectToDatabase(dbConfig: DatabaseConfig): Promise<MongoClient> {
     const client: MongoClient = new MongoClient(dbConfig.MONGO_URI);
     try {
         await client.connect();
@@ -25,6 +25,8 @@ export async function connectToDatabase(dbConfig:DatabaseConfig): Promise<MongoC
 
         const productsCollection: Collection<IProduct> = db.collection<IProduct>("products");//(process.env.PRODUCTS_COLLECTION_NAME);
         collections.products = productsCollection;
+        // Create
+        buildProductDatabaseJsonSchemaModel(db, "products")
 
         console.log(`Successfully connected collection: ${productsCollection.collectionName}`)
 

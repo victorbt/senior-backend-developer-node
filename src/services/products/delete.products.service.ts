@@ -1,13 +1,13 @@
-import { IProduct, IQuery } from '../../../domain/entities/models';
+import { Query } from '../../../domain/entities/query.model';
 import { IProductsRepo } from '../../infrastructure/repositories/products/products.repository';
 
-export type IDeleteProducts = (query: IQuery) => Promise<number>;
+export type IDeleteProduct = (query: Query) => Promise<number>;
 
 export const buildDeleteProduct = ({
     productsRepo,
 }: {
     productsRepo: IProductsRepo;
-}): IDeleteProducts => {
+}): IDeleteProduct => {
     return async query => {
         return productsRepo.deleteOne(query)
     };

@@ -5,13 +5,10 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import swaggerUI from "swagger-ui-express";
 
-import express, {
-  Response as ExResponse,
-  Request as ExRequest,
-  Application,
-  NextFunction,
-} from "express";
-import { ValidateError } from "tsoa";
+import express, { Application, } from "express";
+
+import { errorHandler } from '../handlers/error.handler'
+import { notFoundHandler } from '../handlers/notfound.handler'
 
 import swaggerDocument from '../../docs/swagger.json';
 
@@ -33,37 +30,18 @@ export class ServerApp {
   private app: Application = express();
 
   public async run(): Promise<void> {
+    // Database
     await connectToDatabase(this.dbConf)
+
+    // Server
     await this.createExpressApi()
+
+    // Docs
     this.serveAPIDocumentation(this.app);
 
-    this.app.use(function notFoundHandler(_req, res: ExResponse) {
-      res.status(404).send({
-        message: "Not Found",
-      });
-    });
-
-    this.app.use(function errorHandler(
-      err: unknown,
-      req: ExRequest,
-      res: ExResponse,
-      next: NextFunction
-    ): ExResponse | void {
-      if (err instanceof ValidateError) {
-        console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
-        return res.status(422).json({
-          message: "Validation Failed",
-          details: err?.fields,
-        });
-      }
-      if (err instanceof Error) {
-        return res.status(500).json({
-          message: "Internal Server Error",
-        });
-      }
-
-      next();
-    });
+    // Handlers
+    this.app.use(notFoundHandler);
+    this.app.use(errorHandler);
   }
 
   private async createExpressApi() {
@@ -90,16 +68,6 @@ export class ServerApp {
   public getApp(): Application {
     this.createExpressApi()
     return this.app
-  }
-
-  private isAuth(req: any, res: any, next: any) {
-    const auth = req.headers.authorization;
-    if (auth === 'password') {
-      next();
-    } else {
-      res.status(401);
-      res.send('Access forbidden');
-    }
   }
 
   private log(): void {
