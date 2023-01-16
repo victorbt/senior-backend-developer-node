@@ -1,5 +1,5 @@
-import { Request as expressReq } from "express"
-import { Inject } from 'typescript-ioc'
+import { Request as expressReq } from "express";
+import { Inject } from 'typescript-ioc';
 import { StatusCodes } from 'http-status-codes';
 import {
   Controller,
@@ -43,7 +43,6 @@ export class ProductsControllers extends Controller {
   /**
    * @example offset 0
    * @example limit 20
-   *    * @example limit 20
    * @param badRequestResponse The responder function for a bad request response
    */
   @Get('/')
@@ -172,13 +171,12 @@ export class ProductsControllers extends Controller {
   }
 
 
-  /**
-   * @param searchText Description for the request body object
-   * @example {
-   *   "text": "Coca Cola",
-   * }
-   * @example sort price
-  */
+  // /**
+  //  * @example sort price
+  //  * @param searchText Description for the request body object
+  //  * @example  { "text": "Coca Cola" }
+  //  * @param badRequestResponse The responder function for a bad request response
+  //  */
   @Post('/search')
   @SuccessResponse("200", "")
   @Example<Product[]>(
@@ -203,32 +201,32 @@ export class ProductsControllers extends Controller {
   }
 
 
-  /**
-   * @param filters Description for the request body object
-   * @example {
-   *   "filters": [
-   *      {
-   *        "field": "name",
-   *        "operator":"$eq",
-   *        "value": Coca Cola
-   *      }
-   *    ]
-   * }
-  * @example {
-   *   "filters": [
-   *      {
-   *        "field": "id",
-   *        "operator":"$eq",
-   *        "value": [25,35,68]
-   *      }
-   *    ]
-   * }
-   * @example offset 0
-   * @example limit 20
-   * @example sort price
-   * @param badRequestResponse The responder function for a bad request response
-   * }
-   */
+  // /**
+  // * @param filters Description for the request body object
+  // * @example {
+  // *   "filters": [
+  // *      {
+  // *        "field": "name",
+  // *        "operator":"$eq",
+  // *        "value": Coca Cola
+  // *      }
+  // *    ]
+  // * }
+  // * @example {
+  // *   "filters": [
+  // *      {
+  // *        "field": "id",
+  // *        "operator":"$eq",
+  // *        "value": [25,35,68]
+  // *      }
+  // *    ]
+  // * }
+  // * @example offset 0
+  // * @example limit 20
+  // * @example sort price
+  // * @param badRequestResponse The responder function for a bad request response
+  // * }
+  // */
   @Post('/find')
   @SuccessResponse("200", "")
   @Example<Product[]>(
