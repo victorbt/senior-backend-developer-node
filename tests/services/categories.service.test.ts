@@ -1,230 +1,229 @@
-// import { expect } from 'chai';
-// import sinon, { SinonSandbox } from 'sinon'
+import { expect } from 'chai';
+import sinon, { SinonSandbox } from 'sinon'
 
-// import { Query, IQuery } from '../../domain/entities/query.model'
+import { Query, IQuery } from '../../domain/entities/query.model'
 
-// import { CategoriesRepo, ICategoriesRepo } from '../../src/infrastructure/repositories/categories/categories.repository';
+import { CategoriesRepo, ICategoriesRepo } from '../../src/infrastructure/repositories/categories/categories.repository';
 
-// import { buildListCategories, IListCategories } from '../../src/services/categories/list.categories.service'
-// import { buildCategoryDetail, ICategoryDetail } from '../../src/services/categories/detail.categories.service'
-// import { buildInsertCategories, IInsertCategories } from '../../src/services/categories/insert.categories.service'
-// import { buildUpdateCategory, IUpdateCategory } from '../../src/services/categories/update.categories.service'
-// import { buildDeleteCategory, IDeleteCategory } from '../../src/services/categories/delete.categories.service'
-// import { buildSearchCategories, ISearchCategories } from '../../src/services/categories/search.categories.service'
+import { buildListCategories, IListCategories } from '../../src/services/categories/list.categories.service'
+import { buildCategoryDetail, ICategoryDetail } from '../../src/services/categories/detail.categories.service'
+import { buildInsertCategories, IInsertCategories } from '../../src/services/categories/insert.categories.service'
+import { buildUpdateCategory, IUpdateCategory } from '../../src/services/categories/update.categories.service'
+import { buildDeleteCategory, IDeleteCategory } from '../../src/services/categories/delete.categories.service'
+import { buildSearchCategories, ISearchCategories } from '../../src/services/categories/search.categories.service'
 
-// import { fakeCategories } from '../fixtures/categories.fixture'
 
-// describe('Categories Service Test', () => {
-//     let categoriesRepo: ICategoriesRepo;
-//     let sandbox: SinonSandbox
+import { fakeCategories } from '../fixtures/categories.fixture'
 
-//     beforeEach(() => {
-//         sandbox = sinon.createSandbox();
-//         categoriesRepo = new CategoriesRepo()
-//     });
+describe('Categories Service Test', () => {
+    let categoriesRepo: ICategoriesRepo;
+    let sandbox: SinonSandbox
 
-//     afterEach(() => {
-//         sandbox.restore();
-//     });
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+        categoriesRepo = new CategoriesRepo()
+    });
 
-//     it('should return inserted ids when repository return category', async () => {
-//         let insertCategories: IInsertCategories
+    afterEach(() => {
+        sandbox.restore();
+    });
 
-//         sandbox.stub(categoriesRepo, 'insertMany')
-//             .callsFake(() => Promise.resolve(fakeCategories(4)));
+    it('should return inserted categories when repository return inserted categories', async () => {
+        let insertCategories: IInsertCategories
 
-//         insertCategories = await buildInsertCategories({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'insertMany')
+            .callsFake(() => Promise.resolve(fakeCategories(4)));
 
-//         var categories = await insertCategories(fakeCategories(4))
+        insertCategories = await buildInsertCategories({ categoriesRepo })
 
-//         expect(categories).length(4)
-//     });
+        var categories = await insertCategories(fakeCategories(4))
 
-//     it('should throw error in insert categories when repository reject with error', async () => {
-//         let insertCategories: IInsertCategories
+        expect(categories).length(4)
+    });
 
-//         sandbox.stub(categoriesRepo, 'insertMany')
-//             .rejects(new Error('mongo error'));
+    it('should throw error in insert categories when repository reject with error', async () => {
+        let insertCategories: IInsertCategories
 
-//         insertCategories = await buildInsertCategories({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'insertMany')
+            .rejects(new Error('mongo error'));
 
-//         try {
-//             await insertCategories(fakeCategories(4))
-//         } catch (e) {
-//             expect(e).to.be.not.null
-//             expect((e as Error).message).to.be.equal('mongo error')
-//         }
-//     });
+        insertCategories = await buildInsertCategories({ categoriesRepo })
 
+        try {
+            await insertCategories(fakeCategories(4))
+        } catch (e) {
+            expect(e).to.be.not.null
+            expect((e as Error).message).to.be.equal('mongo error')
+        }
+    });
 
-//     it('should return category deatail when repository return category', async () => {
-//         let categoryDetail: ICategoryDetail
-//         let foundCategory = fakeCategories(1)[0]
 
-//         sandbox.stub(categoriesRepo, 'findOne')
-//             .callsFake(() => Promise.resolve(foundCategory));
+    it('should return category deatail when repository return category', async () => {
+        let categoryDetail: ICategoryDetail
+        let foundCategory = fakeCategories(1)[0]
 
-//         categoryDetail = await buildCategoryDetail({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'findOne')
+            .callsFake(() => Promise.resolve(foundCategory));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        categoryDetail = await buildCategoryDetail({ categoriesRepo })
 
-//         var category = await categoryDetail(query)
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
-//         expect(category.name).to.be.equal(foundCategory.name)
-//     });
+        var category = await categoryDetail(query)
 
-//     it('should throw error in prodcut detail when repository reject with error', async () => {
-//         let categoryDetail: ICategoryDetail
+        expect(category.name).to.be.equal(foundCategory.name)
+    });
 
-//         sandbox.stub(categoriesRepo, 'findOne')
-//             .rejects(new Error('mongo error'));
+    it('should throw error in prodcut detail when repository reject with error', async () => {
+        let categoryDetail: ICategoryDetail
 
-//         categoryDetail = await buildCategoryDetail({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'findOne')
+            .rejects(new Error('mongo error'));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        categoryDetail = await buildCategoryDetail({ categoriesRepo })
 
-//         try {
-//             await categoryDetail(query)
-//         } catch (e) {
-//             expect(e).to.be.not.null
-//             expect((e as Error).message).to.be.equal('mongo error')
-//         }
-//     });
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
-//     it('should return categories when repository return categories', async () => {
-//         let listCategories: IListCategories
+        try {
+            await categoryDetail(query)
+        } catch (e) {
+            expect(e).to.be.not.null
+            expect((e as Error).message).to.be.equal('mongo error')
+        }
+    });
 
-//         sandbox.stub(categoriesRepo, 'find')
-//             .callsFake(() => Promise.resolve(fakeCategories(2)));
+    it('should return categories when repository return categories', async () => {
+        let listCategories: IListCategories
 
-//         listCategories = await buildListCategories({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'find')
+            .callsFake(() => Promise.resolve(fakeCategories(2)));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        listCategories = await buildListCategories({ categoriesRepo })
 
-//         var categories = await listCategories(query)
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
-//         expect(categories).to.length(2)
-//     });
+        var categories = await listCategories(query)
 
+        expect(categories).to.length(2)
+    });
 
-//     it('should throw error in find when repository reject with error', async () => {
-//         let listCategories: IListCategories
 
-//         sandbox.stub(categoriesRepo, 'find')
-//             .rejects(new Error('mongo error'));
+    it('should throw error in find when repository reject with error', async () => {
+        let listCategories: IListCategories
 
-//         listCategories = await buildListCategories({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'find')
+            .rejects(new Error('mongo error'));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        listCategories = await buildListCategories({ categoriesRepo })
 
-//         try {
-//             await listCategories(query)
-//         } catch (e) {
-//             expect(e).to.be.not.null
-//             expect((e as Error).message).to.be.equal('mongo error')
-//         }
-//     });
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
-//     it('should return updated category', async () => {
-//         let updateCategory: IUpdateCategory
+        try {
+            await listCategories(query)
+        } catch (e) {
+            expect(e).to.be.not.null
+            expect((e as Error).message).to.be.equal('mongo error')
+        }
+    });
 
-//         let newCategory = fakeCategories(1)[0]
+    it('should return updated category', async () => {
+        let updateCategory: IUpdateCategory
 
-//         sandbox.stub(categoriesRepo, 'updateOne')
-//             .callsFake(() => Promise.resolve(newCategory));
+        let newCategory = fakeCategories(1)[0]
 
-//         updateCategory = await buildUpdateCategory({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'updateOne')
+            .callsFake(() => Promise.resolve(newCategory));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        updateCategory = await buildUpdateCategory({ categoriesRepo })
 
-//         var category = await updateCategory(query, newCategory)
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
-//         expect(category.name).to.be.equal(newCategory.name)
-//     });
+        var category = await updateCategory(query, newCategory)
 
+        expect(category.name).to.be.equal(newCategory.name)
+    });
 
-//     it('should throw error in update when repository reject with error', async () => {
-//         let updateCategory: IUpdateCategory
 
-//         sandbox.stub(categoriesRepo, 'updateOne')
-//             .rejects(new Error('mongo error'));
+    it('should throw error in update when repository reject with error', async () => {
+        let updateCategory: IUpdateCategory
 
-//         updateCategory = await buildUpdateCategory({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'updateOne')
+            .rejects(new Error('mongo error'));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        updateCategory = await buildUpdateCategory({ categoriesRepo })
 
-//         try {
-//             await updateCategory(query, fakeCategories(1)[0])
-//         } catch (e) {
-//             expect(e).to.be.not.null
-//             expect((e as Error).message).to.be.equal('mongo error')
-//         }
-//     });
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
+        try {
+            await updateCategory(query, fakeCategories(1)[0])
+        } catch (e) {
+            expect(e).to.be.not.null
+            expect((e as Error).message).to.be.equal('mongo error')
+        }
+    });
 
-//     it('should return delete category', async () => {
-//         let deleteCategory: IDeleteCategory
 
-//         sandbox.stub(categoriesRepo, 'deleteOne')
-//             .callsFake(() => Promise.resolve(1));
+    it('should return delete category', async () => {
+        let deleteCategory: IDeleteCategory
 
-//         deleteCategory = await buildDeleteCategory({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'deleteOne')
+            .callsFake(() => Promise.resolve(1));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        deleteCategory = await buildDeleteCategory({ categoriesRepo })
 
-//         var result = await deleteCategory(query)
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
-//         expect(result).to.be.equal(1)
-//     });
+        var result = await deleteCategory(query)
 
-//     it('should throw error in delete when repository reject with error', async () => {
-//         let deleteCategory: IDeleteCategory
+        expect(result).to.be.equal(1)
+    });
 
-//         sandbox.stub(categoriesRepo, 'deleteOne')
-//             .rejects(new Error('mongo error'));
+    it('should throw error in delete when repository reject with error', async () => {
+        let deleteCategory: IDeleteCategory
 
-//         deleteCategory = await buildDeleteCategory({ categoriesRepo })
+        sandbox.stub(categoriesRepo, 'deleteOne')
+            .rejects(new Error('mongo error'));
 
-//         let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
+        deleteCategory = await buildDeleteCategory({ categoriesRepo })
 
-//         try {
-//             await deleteCategory(query)
-//         } catch (e) {
-//             expect(e).to.be.not.null
-//             expect((e as Error).message).to.be.equal('mongo error')
-//         }
-//     });
+        let query: IQuery = new Query([], { offset: 0, limit: 5 }, {})
 
+        try {
+            await deleteCategory(query)
+        } catch (e) {
+            expect(e).to.be.not.null
+            expect((e as Error).message).to.be.equal('mongo error')
+        }
+    });
 
-//     it('should return categories when repository return categories', async () => {
-//         let searchCategories: ISearchCategories
+    it('should return query match categories when repository return categories', async () => {
+        let searchCategories: ISearchCategories
 
-//         sandbox.stub(categoriesRepo, 'find')
-//             .callsFake(() => Promise.resolve(fakeCategories(2)));
+        sandbox.stub(categoriesRepo, 'search')
+            .callsFake(() => Promise.resolve(fakeCategories(2)));
 
-//         searchCategories = await buildSearchCategories({ categoriesRepo })
+        searchCategories = await buildSearchCategories({ categoriesRepo })
 
-//         var categories = await searchCategories('category name')
+        var categories = await searchCategories('category name')
 
-//         expect(categories).to.length(2)
-//     });
+        expect(categories).to.length(2)
+    });
 
+    it('should throw error in find when repository reject with error', async () => {
+        let searchCategories: ISearchCategories
 
-//     it('should throw error in find when repository reject with error', async () => {
-//         let searchCategories: ISearchCategories
+        sandbox.stub(categoriesRepo, 'search')
+            .rejects(new Error('mongo error'));
 
-//         sandbox.stub(categoriesRepo, 'find')
-//             .rejects(new Error('mongo error'));
+        searchCategories = await buildSearchCategories({ categoriesRepo })
 
-//             searchCategories = await buildSearchCategories({ categoriesRepo })
+        try {
+            await searchCategories("category name")
+        } catch (e) {
+            expect(e).to.be.not.null
+            expect((e as Error).message).to.be.equal('mongo error')
+        }
+    });
 
-//         try {
-//             await searchCategories("category name")
-//         } catch (e) {
-//             expect(e).to.be.not.null
-//             expect((e as Error).message).to.be.equal('mongo error')
-//         }
-//     });
-
-// });
+});
 

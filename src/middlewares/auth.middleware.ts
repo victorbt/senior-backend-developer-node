@@ -8,7 +8,7 @@ export function isAuth(request: Request, securityName: string, scopes?: string[]
       token = request.query.access_token;
     }
 
-    if (token === "abc123456") {
+    if (token === "api_key_secret") {
       return Promise.resolve({
         id: 1,
         name: "Ironman",

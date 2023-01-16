@@ -1,27 +1,39 @@
-// import { Controller, Route, Get, Post, SuccessResponse } from "tsoa";
+import { Request } from 'express'
 
-// import { StatusCodes } from 'http-status-codes';
-// import { IHttpRequest } from '../../helpers/callback';
+import { Category, Query } from '../../../domain/entities/models'
 
-// import { ICategoriesService } from '../../services/categories';
+import { ICategoriesService } from '../../services/categories';
 
-// import { IControllerResponse } from '..';
+export const buildGetCategories = (service: ICategoriesService) => {
+    return async (
+        request: Partial<Request>,
+    ): Promise<Category[]> => {
+        try {
+            let filters = request.body;
+            if (!request.body.filters) {
+                filters = [];
+            };
 
-// export const buildGetCategories = (service: ICategoriesService) => {
-//     return async (
-//         request: Partial<IHttpRequest>,
-//     ): Promise<IControllerResponse> => {
-//         let pategoryId: string = request.params ? request.params?.['id'] : "0";
-//         let pategoryID = parseInt(pategoryId);
-//         const category = await service.categoryDetail(pategoryID);
+            let limit = 1000
 
-//         return {
-//             success: true,
-//             message: "Sucess",
-//             statusCode: StatusCodes.OK,
-//             body: {
-//                 categories: [category]
-//             }
-//         };
-//     };
-// };
+            if (request.query?.limit) {
+                limit = parseInt(request.query?.limit as string)
+            };
+
+            let offset = 0
+
+            if (request.query?.limit) {
+                offset = parseInt(request.query?.limit as string)
+            };
+
+            let sort = {}
+
+            let query = new Query(filters, { offset, limit }, sort);
+
+            return await service.listCategories(query);
+        } catch (e) {
+            throw e;
+
+        }
+    };
+};
