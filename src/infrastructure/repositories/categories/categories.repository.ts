@@ -1,40 +1,30 @@
-import { ObjectId, MongoServerError } from "mongodb";
+import { Category, ICategory } from '../../../../domain/entities/category.model';
 
-import { Category, ICategory } from '../../../../domain/entities/category.model'
-import { IQuery } from '../../../../domain/entities/query.model'
+import { collections, GetIncSequenceID, SequenceObj } from '../../../database/mongo.service';
 
-import { collections } from '../../../database/mongo.service';
+import { Query } from '../../../../domain/entities/query.model';
 
 export interface ICategoriesRepo {
-    find: (query: IQuery) => Promise<Category[]>;
-    findOne: (query: IQuery) => Promise<Category>;
-    insertOne: (data: ICategory) => Promise<number>;
-    insertMany: (data: Category[]) => Promise<number[]>;
-    updateOne: (query: IQuery, data: Category) => Promise<Category>;
-    deleteOne: (query: IQuery) => Promise<number>;
-    search: (data: string) => Promise<Category[]>;
+    find: (query: Query) => Promise<Category[]>;
+    findOne: (query: Query) => Promise<Category>;
+    insertOne: (data: Category) => Promise<Category>;
+    insertMany: (data: Category[]) => Promise<Category[]>;
+    updateOne: (query: Query, data: Category) => Promise<Category>;
+    deleteOne: (query: Query) => Promise<number>;
+    search: (text: string) => Promise<Category[]>;
 }
 
-export const buildCategoriesRepo = (): ICategoriesRepo => {
-    const find = async (query: IQuery) => {
+export class CategoriesRepo implements ICategoriesRepo {
+    find = async (query: Query) => {
         try {
             let filters = query.generateFilterElements()
             return await collections.categories?.find<ICategory>(filters).toArray() as Category[];
-        } catch (err) {
-            if (err instanceof MongoServerError) {
-                console.error("No Documents Found:(" + err.code + ")\n", err)
-                // insertResult = { 
-                //     insertedId: null,
-                //     message: "Message expalining the situation."
-                // }
-                throw (err)
-            }
-
-            throw (err)
+        } catch (error) {
+            throw (error)
         }
     };
 
-    const findOne = async (query: IQuery) => {
+    findOne = async (query: Query) => {
         try {
             let filters = query.generateFilterElements()
             return await collections.categories?.findOne<ICategory>(filters) as Category;
@@ -43,41 +33,61 @@ export const buildCategoriesRepo = (): ICategoriesRepo => {
         }
     };
 
-    const insertOne = async (data: ICategory) => {
+    insertOne = async (data: Category) => {
         try {
+            let seqObj: SequenceObj = await GetIncSequenceID('products', 1)
+
+            data.id = seqObj.seq
+
             let filters = { "name": data.name }
-            let foundCategory = collections.categories?.findOne(filters)
+            let foundCategory = await collections.categories?.findOne<ICategory>(filters)
             if (foundCategory) throw new Error("Category already exists")
+            await collections.categories?.insertOne(data)
 
-            let update = await collections.categories?.insertOne(data)
-
-            let updateID = update?.insertedId as ObjectId
-
-            return 0
+            return data
         } catch (error) {
             throw (error)
         }
     };
 
-    const insertMany = async (data: ICategory[]) => {
+    insertMany = async (data: ICategory[]) => {
         try {
-            let update = await collections.categories?.insertMany(data)
 
-            let updatedIDs = update?.insertedCount as number;
-            if (updatedIDs) {
-                return []
+            let seqObj: SequenceObj = await GetIncSequenceID('products', data.length)
+
+            data = data.map((product, i) => {
+                product.id = seqObj.seq - (data.length - i)
+                return product
+            })
+
+            let inserted = await collections.categories?.insertMany(data)
+
+            let insertedCound = inserted?.insertedCount as number;
+            let insertedIDs = inserted?.insertedIds as {
+                [key: number]: any;
             }
 
-            throw new Error("insert error");
+            let updatedIds: any[] = []
+
+            for (let id in insertedIDs) {
+                updatedIds.push(id)
+            }
+
+            if (updatedIds.length == 0 || data.length > insertedCound) {
+                throw new Error("insert error");
+            }
+
+            return updatedIds
         } catch (error) {
             throw (error)
         }
     };
 
-    const updateOne = async (query: IQuery, data: ICategory) => {
+    updateOne = async (query: Query, data: Category) => {
         try {
             let filters = query.generateFilterElements()
-            let update = (await collections.categories?.findOneAndUpdate(filters, data))
+
+            let update = await collections.categories?.findOneAndUpdate(filters, { "$set": { data } })
             let updateStatus = update?.ok as number;
             if (updateStatus) {
                 return data
@@ -90,7 +100,7 @@ export const buildCategoriesRepo = (): ICategoriesRepo => {
         }
     };
 
-    const deleteOne = async (query: IQuery) => {
+    deleteOne = async (query: Query) => {
         try {
             let filters = query.generateFilterElements()
             let update = (await collections.categories?.findOneAndDelete(filters))
@@ -106,7 +116,7 @@ export const buildCategoriesRepo = (): ICategoriesRepo => {
         }
     };
 
-    const search = async (text: string) => {
+    search = async (text: string) => {
         return await (collections.categories?.find<ICategory>(
             { $text: { $search: text } },
             { projection: { score: { $meta: "textScore" } } })
@@ -114,14 +124,4 @@ export const buildCategoriesRepo = (): ICategoriesRepo => {
             .toArray()) as Category[];
     };
 
-    return {
-        find,
-        findOne,
-        insertOne,
-        insertMany,
-        updateOne,
-        deleteOne,
-        search
-    };
-};
-
+}

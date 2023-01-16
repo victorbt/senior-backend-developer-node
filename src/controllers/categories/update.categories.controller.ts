@@ -1,27 +1,22 @@
-// import { StatusCodes } from 'http-status-codes';
-// import { IHttpRequest } from '../../helpers/callback';
+import { Request } from 'express';
 
-// import { ICategoriesService } from '../../services/categories';
-// import { Query, IFilter } from '../../../domain/entities/query.model';
+import { ICategoriesService } from '../../services/categories';
 
-// import { IControllerResponse } from '..';
+import { Query} from '../../../domain/entities/query.model';
 
-// export const buildUpdateCategory = (service: ICategoriesService) => {
-//     return async (
-//         request: Partial<IHttpRequest>,
-//     ): Promise<IControllerResponse> => {
-//         let filters: IFilter[] = []
-//         let query = new Query(filters, { offset: 0, limit: 0 }, {})
+import { Category } from '../../../domain/entities/models';
 
-//         let category = await service.updateCategory(query, request.body);
+type CategoryData = Omit<Category, '_id' | 'id'>;
 
-//         return {
-//             success: true,
-//             message: "Sucess",
-//             statusCode: StatusCodes.OK,
-//             body: {
-//                 categories: [category]
-//             }
-//         };
-//     };
-// };
+export const buildUpdateCategory = (service: ICategoriesService) => {
+    return async (
+        request: Partial<Request>,
+    ): Promise<Category> => {
+        let categoryId =  request.params?.['id'] as string
+        let categoryID = parseInt(categoryId);
+
+        let query = new Query([{ field: "id", operator: "$eq", value: categoryID }], {}, {});
+
+        return await service.updateCategory(query, request.body as CategoryData);
+    };
+};

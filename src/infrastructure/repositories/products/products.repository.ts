@@ -1,36 +1,39 @@
 import { Product, IProduct } from '../../../../domain/entities/product.model';
 
-import { collections } from '../../../database/mongo.service';
+import { collections, GetIncSequenceID, SequenceObj } from '../../../database/mongo.service';
 
 import { Query } from '../../../../domain/entities/query.model';
 
 export interface IProductsRepo {
 	find: (query: Query) => Promise<Product[]>;
 	findOne: (query: Query) => Promise<Product>;
-	insertOne: (data: Product) => Promise<number>;
-	insertMany: (data: Product[]) => Promise<number[]>;
+	insertOne: (data: Product) => Promise<Product>;
+	insertMany: (data: Product[]) => Promise<Product[]>;
 	updateOne: (query: Query, data: Product) => Promise<Product>;
 	deleteOne: (query: Query) => Promise<number>;
 	search: (text: string) => Promise<Product[]>;
 }
 
-export var productsRepo: IProductsRepo
-
-export const buildProductsRepo = (): IProductsRepo => {
-	if (productsRepo) {
-		return productsRepo
-	}
-
-	const find = async (query: Query) => {
+export class ProductsRepo implements IProductsRepo {
+	find = async (query: Query) => {
 		try {
 			let filters = query.generateFilterElements()
-			return await collections.products?.find<IProduct>(filters).toArray() as Product[];
+
+			let findOperation = collections.products?.find<IProduct>(filters)
+
+			if (query.sort && query.sort != '') {
+				findOperation?.sort(query.sort)
+			}
+
+			return await findOperation?.skip(query.pagination.offset as number)
+				.limit(query.pagination.limit as number)
+				.toArray() as Product[];
 		} catch (error) {
 			throw (error)
 		}
 	};
 
-	const findOne = async (query: Query) => {
+	findOne = async (query: Query) => {
 		try {
 			let filters = query.generateFilterElements()
 			return await collections.products?.findOne<IProduct>(filters) as Product;
@@ -39,24 +42,33 @@ export const buildProductsRepo = (): IProductsRepo => {
 		}
 	};
 
-	const insertOne = async (data: IProduct) => {
+	insertOne = async (data: IProduct) => {
 		try {
-			// getNextID
-			let id = 1
+			let seqObj: SequenceObj = await GetIncSequenceID('products', 1)
+
+			data.id = seqObj.seq
 
 			let filters = { "name": data.name }
 			let foundProduct = await collections.products?.findOne<IProduct>(filters)
 			if (foundProduct) throw new Error("Product already exists")
 			await collections.products?.insertOne(data)
 
-			return id
+			return data
 		} catch (error) {
 			throw (error)
 		}
 	};
 
-	const insertMany = async (data: IProduct[]) => {
+	insertMany = async (data: IProduct[]) => {
 		try {
+			let seqObj: SequenceObj = await GetIncSequenceID('products', data.length)
+
+			data = data.map((product, i) => {
+				product.id = seqObj.seq - (data.length - i)
+				return product
+			})
+
+
 			let inserted = await collections.products?.insertMany(data)
 
 			let insertedCound = inserted?.insertedCount as number;
@@ -67,25 +79,20 @@ export const buildProductsRepo = (): IProductsRepo => {
 			let updatedIds: any[] = []
 
 			for (let id in insertedIDs) {
-				//console.log(insertedIDs[id])
-				updatedIds.push(0)
+				updatedIds.push(id)
 			}
 
-			if (updatedIds.length == 0) {
+			if (updatedIds.length == 0 || data.length > insertedCound) {
 				throw new Error("insert error");
 			}
 
-			if (data.length > insertedCound) {
-				return updatedIds
-			}
-
-			return updatedIds
+			return data
 		} catch (error) {
 			throw (error)
 		}
 	};
 
-	const updateOne = async (query: Query, data: Product) => {
+	updateOne = async (query: Query, data: Product) => {
 		try {
 			let filters = query.generateFilterElements()
 
@@ -102,7 +109,7 @@ export const buildProductsRepo = (): IProductsRepo => {
 		}
 	};
 
-	const deleteOne = async (query: Query) => {
+	deleteOne = async (query: Query) => {
 		try {
 			let filters = query.generateFilterElements()
 			let update = (await collections.products?.findOneAndDelete(filters))
@@ -118,24 +125,16 @@ export const buildProductsRepo = (): IProductsRepo => {
 		}
 	};
 
-	const search = async (text: string) => {
-		return await (collections.products?.find<IProduct>(
-			{ $text: { $search: text } },
-			{ projection: { score: { $meta: "textScore" } } })
-			.sort({ score: { $meta: "textScore" } })
-			.toArray()) as Product[];
+	search = async (text: string) => {
+		try {
+			return await (collections.products?.find<IProduct>(
+				{ $text: { $search: text } },
+				{ projection: { score: { $meta: "textScore" } } })
+				.sort({ score: { $meta: "textScore" } })
+				.toArray()) as Product[];
+		} catch (error) {
+			throw (error)
+		}
 	};
 
-	productsRepo = {
-		find,
-		findOne,
-		insertOne,
-		insertMany,
-		updateOne,
-		deleteOne,
-		search
-	};
-
-	return productsRepo
-};
-
+}

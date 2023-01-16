@@ -52,6 +52,90 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"ValidationErrorDetails": {
+				"properties": {},
+				"type": "object",
+				"additionalProperties": {
+					"properties": {
+						"message": {}
+					},
+					"required": [
+						"message"
+					],
+					"type": "object"
+				}
+			},
+			"ValidateError": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string",
+						"default": ""
+					},
+					"stack": {
+						"type": "string"
+					},
+					"status": {
+						"type": "number",
+						"format": "double",
+						"default": 400
+					},
+					"details": {
+						"$ref": "#/components/schemas/ValidationErrorDetails"
+					}
+				},
+				"required": [
+					"name",
+					"message",
+					"status",
+					"details"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IFilter": {
+				"properties": {
+					"field": {
+						"type": "string"
+					},
+					"operator": {
+						"type": "string"
+					},
+					"value": {
+						"anyOf": [
+							{
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							{
+								"items": {
+									"type": "number",
+									"format": "double"
+								},
+								"type": "array"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							},
+							{
+								"type": "string"
+							}
+						]
+					}
+				},
+				"required": [
+					"field",
+					"operator",
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -71,7 +155,7 @@
 				"operationId": "ListProducts",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -87,6 +171,27 @@
 										"products"
 									],
 									"type": "object"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The responder function for a bad request response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
 								}
 							}
 						}
@@ -96,7 +201,36 @@
 					"Get"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						},
+						"example": 0
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						},
+						"example": 20
+					},
+					{
+						"in": "query",
+						"name": "sort",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			},
 			"post": {
 				"operationId": "InsertProducts",
@@ -105,7 +239,67 @@
 						"description": "Created",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidateError"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"message": "Validation failed",
+											"name": "Product Schema Validation Failed",
+											"status": 422,
+											"details": {
+												"body.$0.name": {
+													"message": "'name' is required"
+												},
+												"body.$0.description": {
+													"message": "'description' is required"
+												},
+												"body.$0.vendor": {
+													"message": "'vendor' is required"
+												},
+												"body.$0.image": {
+													"message": "'image' is required"
+												},
+												"body.$0.price": {
+													"message": "'price' is required"
+												},
+												"body.$0.categories": {
+													"message": "'categories' is required"
+												}
+											}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -115,7 +309,11 @@
 					"Insert",
 					"Create"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -140,7 +338,30 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {
+									"$ref": "#/components/schemas/Product"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The responder function for a bad request response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
 							}
 						}
 					}
@@ -149,7 +370,18 @@
 					"Get"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productID",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						},
+						"example": 258
+					}
+				]
 			},
 			"put": {
 				"operationId": "UpdateProduct",
@@ -158,28 +390,100 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
 							}
 						}
 					}
 				},
-				"security": [],
-				"parameters": []
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productID",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Product"
+							}
+						}
+					}
+				}
 			},
 			"delete": {
 				"operationId": "DeleteProduct",
 				"responses": {
-					"200": {
-						"description": "Ok",
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
 							}
 						}
 					}
 				},
-				"security": [],
-				"parameters": []
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productID",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/api/v1/products/search": {
@@ -187,16 +491,77 @@
 				"operationId": "SearchProducts",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {
+									"properties": {
+										"products": {
+											"items": {
+												"$ref": "#/components/schemas/Product"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"products"
+									],
+									"type": "object"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
 							}
 						}
 					}
 				},
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "sort",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"text": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"text"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/v1/products/find": {
@@ -204,16 +569,80 @@
 				"operationId": "FindProducts",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {
+									"properties": {
+										"products": {
+											"items": {
+												"$ref": "#/components/schemas/Product"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"products"
+									],
+									"type": "object"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
 							}
 						}
 					}
 				},
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "sort",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"filters": {
+										"items": {
+											"$ref": "#/components/schemas/IFilter"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"filters"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		}
 	},

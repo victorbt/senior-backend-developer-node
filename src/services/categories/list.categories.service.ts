@@ -1,17 +1,14 @@
-import { ICategory } from 'domain/entities/category.model';
-
+import { Category,Query  } from '../../../domain/entities/models';
 import { ICategoriesRepo } from '../../infrastructure/repositories/categories/categories.repository';
 
-import { Query } from '../../../domain/entities/query.model';
-
-export type IListCategories = (query: Query) => Promise<ICategory[]>;
+export type IListCategories = (query: Query) => Promise<Category[]>;
 
 export const buildListCategories = ({
 	categoriesRepo
 }: {
 	categoriesRepo: ICategoriesRepo;
 }): IListCategories => {
-	return async query => {
-		return await categoriesRepo.find(query);
+	return query => {
+		return categoriesRepo.find(query);
 	};
 };

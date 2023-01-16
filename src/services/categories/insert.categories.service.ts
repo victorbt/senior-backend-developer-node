@@ -1,15 +1,15 @@
-import { ICategory } from 'domain/entities/category.model';
+import { Category } from '../../../domain/entities/category.model';
+
 import { ICategoriesRepo } from '../../infrastructure/repositories/categories/categories.repository';
 
-export type IInsertCategories= (body: ICategory[]) => Promise<number[]>;
+export type IInsertCategories = (Categories: Category[]) => Promise<Category[]>;
 
-export const buildInsertCategories= ({
+export const buildInsertCategories = ({
     categoriesRepo,
 }: {
     categoriesRepo: ICategoriesRepo;
-}): IInsertCategories=> {
-    return async body => {
-        //const bookData = validateBook(body);
-        return categoriesRepo.insertMany(body)
+}): IInsertCategories => {
+    return async Categories => {
+        return categoriesRepo.insertMany(Categories)
     };
 };

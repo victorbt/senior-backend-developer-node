@@ -2,17 +2,21 @@ import { Request } from 'express';
 
 import { IProductsService } from '../../services/products';
 
-import { Query, IFilter } from '../../../domain/entities/query.model';
+import { Query} from '../../../domain/entities/query.model';
 
 import { Product } from '../../../domain/entities/models';
+
+type ProductData = Omit<Product, '_id' | 'id'>;
 
 export const buildUpdateProduct = (service: IProductsService) => {
     return async (
         request: Partial<Request>,
     ): Promise<Product> => {
-        let filters: IFilter[] = []
-        let query = new Query(filters, { offset: 0, limit: 0 }, {})
+        let productId =  request.params?.['id'] as string
+        let productID = parseInt(productId);
 
-        return await service.updateProduct(query, request.body as Product);
+        let query = new Query([{ field: "id", operator: "$eq", value: productID }], {}, {});
+
+        return await service.updateProduct(query, request.body as ProductData);
     };
 };
