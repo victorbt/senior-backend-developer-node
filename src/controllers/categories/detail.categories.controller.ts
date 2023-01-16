@@ -4,7 +4,7 @@ import { Category, Query } from '../../../domain/entities/models'
 
 import { ICategoriesService } from '../../services/categories';
 
-export const buildProductDetail = (service: ICategoriesService) => {
+export const buildCategoryDetail = (service: ICategoriesService) => {
     return async (
         request: Partial<Request>,
     ): Promise<Category> => {

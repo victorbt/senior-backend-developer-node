@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { verify } from 'jsonwebtoken';
 
-export function isAuth(request: Request, securityName: string, scopes?: string[]): Promise<any> {
+export function expressAuthentication(request: Request, securityName: string, scopes?: string[]): Promise<any> {
   if (securityName === "api_key") {
     let token;
     if (request.query && request.query.access_token) {

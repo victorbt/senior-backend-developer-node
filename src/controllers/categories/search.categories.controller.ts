@@ -1,24 +1,17 @@
-// import { StatusCodes } from 'http-status-codes';
-// import { IHttpRequest } from '../../helpers/callback';
+import { Request } from 'express';
 
-// import { ICategoriesService } from '../../services/categories';
+import { ICategoriesService } from '../../services/categories';
 
-// import { IControllerResponse } from '..';
+import { Category } from '../../../domain/entities/models';
 
-// export const buildSearchCategories = (service: ICategoriesService) => {
-//     return async (
-//         request: Partial<IHttpRequest>,
-//     ): Promise<IControllerResponse> => {
-//         let text: string = request.body['text']
-//         const categories = await service.searchCategories(text);
+export const buildSearchCategories = (service: ICategoriesService) => {
+    return async (
+        request: Partial<Request>,
+    ): Promise<{ categories: Category[] }> => {
+        let text = request.body['text'] as string
 
-//         return {
-//             success: true,
-//             message: "Sucess",
-//             statusCode: StatusCodes.OK,
-//             body: {
-//                 categories
-//             }
-//         };
-//     };
-// };
+        return {
+            categories: await service.searchCategories(text)
+        };
+    };
+};

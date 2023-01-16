@@ -10,7 +10,7 @@
     "start": "APP_ENV=local ts-node ./src/main.ts",
     "test": "APP_ENV=local mocha -r ts-node/register tests/**/*.test.ts --exit --timeout=8000",
     "build": "tsc",
-    "swagger": "tsoa spec && tsoa swagger && tsoa routes"
+    "swagger": "tsoa spec-and-routes  && tsoa swagger"
   },
   "repository": {
     "type": "git",
