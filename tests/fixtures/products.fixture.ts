@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { ObjectId } from "mongodb";
-import { Product, IProduct } from '../../domain/entities/product.model'
+import { Product } from '../../domain/entities/product.model'
 
 
 export const fakeProducts = (l: number): Product[] => {

@@ -14,7 +14,21 @@ export const buildGetProducts = (service: IProductsService) => {
                 filters = [];
             };
 
-            let query = new Query(filters, { offset: 0, limit: 15 }, {});
+            let limit = 1000
+
+            if (request.query?.limit) {
+                limit = parseInt(request.query?.limit as string)
+            };
+
+            let offset = 0
+
+            if (request.query?.limit) {
+                offset = parseInt(request.query?.limit as string)
+            };
+
+            let sort = {}
+
+            let query = new Query(filters, { offset, limit }, sort);
 
             return await service.listProducts(query);
         } catch (e) {

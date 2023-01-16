@@ -2,8 +2,9 @@ import {
 	IQuery,
 	Product
 } from 'domain/entities/models';
+import { Singleton, OnlyInstantiableByContainer, Inject } from "typescript-ioc";
 
-import { IProductsRepo } from '../../infrastructure/repositories/products/products.repository';
+import { ProductsRepo } from '../../infrastructure/repositories/products/products.repository';
 
 import { buildListProducts, IListProducts } from './list.products.service';
 import { buildInsertProducts, IInsertProducts } from './insert.products.service';
@@ -21,12 +22,10 @@ export interface IProductsService {
 	searchProducts: ISearchProducts;
 }
 
+@Singleton
+@OnlyInstantiableByContainer
 export class ProductsService implements IProductsService {
-	_productsRepo: IProductsRepo
-
-	constructor(_productsRepo: IProductsRepo) {
-		this._productsRepo = _productsRepo
-	}
+	@Inject _productsRepo: ProductsRepo
 
 	public productDetail = (query: IQuery) => buildProductDetail({ productsRepo: this._productsRepo })(query)
 	public listProducts = (query: IQuery) => buildListProducts({ productsRepo: this._productsRepo })(query)

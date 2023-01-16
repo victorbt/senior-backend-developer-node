@@ -1,15 +1,14 @@
-import { IProduct, IQuery } from '../../../domain/entities/models';
+import { Query } from '../../../domain/entities/models';
 import { ICategoriesRepo } from '../../infrastructure/repositories/categories/categories.repository';
 
-export type IDeleteCategories = (query: IQuery) => Promise<number>;
+export type IDeleteCategory = (query: Query) => Promise<number>;
 
 export const buildDeleteCategory = ({
     categoriesRepo,
 }: {
     categoriesRepo: ICategoriesRepo;
-}): IDeleteCategories => {
+}): IDeleteCategory => {
     return async query => {
-        //const bookData = validateBook(body);
         return categoriesRepo.deleteOne(query)
     };
 };

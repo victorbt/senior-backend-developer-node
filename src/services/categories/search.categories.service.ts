@@ -1,8 +1,7 @@
-import { ICategory } from 'domain/entities/category.model';
-
+import { Category } from '../../../domain/entities/category.model';
 import { ICategoriesRepo } from '../../infrastructure/repositories/categories/categories.repository';
 
-export type ISearchCategories = (text: string) => Promise<ICategory[]>;
+export type ISearchCategories = (text: string) => Promise<Category[]>;
 
 export const buildSearchCategories = ({
 	categoriesRepo

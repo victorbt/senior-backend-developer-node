@@ -8,7 +8,7 @@ export const buildSearchProducts = (service: IProductsService) => {
     return async (
         request: Partial<Request>,
     ): Promise<{ products: Product[] }> => {
-        let text: string = request.body['text']
+        let text = request.body['text'] as string
 
         return {
             products: await service.searchProducts(text)
