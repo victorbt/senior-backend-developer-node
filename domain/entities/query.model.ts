@@ -30,13 +30,13 @@ export class Query implements IQuery {
     generateFilterElements(): Object {
         let mongoFilters: Record<string, any> = {}
 
-        for (var filter of this.filters) {
+        for (let filter of this.filters) {
             switch (typeof filter.value) {
                 case 'string' || 'number':
                     mongoFilters[filter.field] = filter.value
                     break;
                 case 'object':
-                    const isArray = (x: any): x is ArrType => { return true}
+                    const isArray = (x: any): x is ArrType => { return true }
                     if (isArray(filter.value)) {
                         let mongoFilter: Record<string, any> = {}
                         mongoFilter[filter.operator] = filter.value

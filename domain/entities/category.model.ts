@@ -1,27 +1,26 @@
 import { Db, ObjectId } from "mongodb";
 
+import { categoryJSONSchema } from './schemas'
+
 export interface ICategory {
     _id?: ObjectId;
     id?: number;
     name: string;
     description: string;
-    categories: string[];
 }
 
 export class Category implements ICategory {
     constructor(
         public name: string,
         public description: string,
-        public categories: string[],
         public _id?: ObjectId,
         public id?: number
     ) { }
 }
 
-export const buildCategoryJsonSchemaModel = async (db: Db) => {
+export const buildCategoriesDatabaseJsonSchemaModel = async (db: Db, collection: string) => {
     await db.command({
-        "collMod": "categories",
-        "validator": {}
+        "collMod": collection,
+        "validator": categoryJSONSchema
     });
 };
-

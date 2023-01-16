@@ -1,23 +1,23 @@
-// import { StatusCodes } from 'http-status-codes';
-// import { IHttpRequest } from '../../helpers/callback';
+import { Request } from 'express'
 
-// import { ICategoriesService } from '../../services/categories';
+import { Category } from 'domain/entities/category.model';
 
-// import { IControllerResponse } from '..';
+import { ICategoriesService } from '../../services/categories';
 
-// export const buildInsertCategories = (service: ICategoriesService) => {
-// 	return async (
-// 		request: Partial<IHttpRequest>,
-// 	): Promise<IControllerResponse> => {
-// 		const isertedID = await service.insertCategories(request.body);
+type CategoryData = Omit<Category, '_id' | 'id'>;
 
-// 		return {
-// 			success: true,
-//             message: "Sucess",
-// 			statusCode: StatusCodes.OK,
-// 			body: {
-// 				isertedID: isertedID,
-// 			},
-// 		};
-// 	};
-// };
+export const buildInsertCategories = (service: ICategoriesService) => {
+    return async (
+        request: Partial<Request>,
+    ): Promise<{ categories: Category[] }> => {
+        try {
+            let categories = request.body as CategoryData[]
+
+            return { categories: await service.insertCategories(categories as Category[]) };
+        }
+        catch (e) {
+            console.log(e)
+            throw e
+        }
+    };
+};

@@ -16,7 +16,19 @@ export const buildListCategories = (service: ICategoriesService) => {
 			filters = [];
 		};
 
-		let query = new Query(filters, { offset: 0, limit: 0 }, {});
+		let limit = 1000
+
+		if (request.query?.limit) {
+			limit = parseInt(request.query?.limit as string)
+		};
+
+		let offset = 0
+
+		if (request.query?.limit) {
+			offset = parseInt(request.query?.limit as string)
+		};
+
+		let query = new Query(filters, { offset, limit }, {});
 
 		return { categories: await service.listCategories(query) }
 	};
